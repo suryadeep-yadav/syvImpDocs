@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Storage Types Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .storage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .storage-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .storage-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            color: #444;
+        }
+
+        .card-description {
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .storage-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5a6fd8;
+        }
+
+        .data-display {
+            margin-top: 15px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #667eea;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .clear-btn {
+            background: #e74c3c;
+        }
+
+        .clear-btn:hover {
+            background: #c0392b;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>JavaScript Storage Types</h1>
+            <p class="subtitle">A comprehensive guide to browser storage mechanisms</p>
+        </header>
+
+        <div class="storage-grid">
+            <!-- Cookies Card -->
+            <div class="storage-card">
+                <div class="card-header">
+                    <div class="card-icon">🍪</div>
+                    <h2 class="card-title">Cookies</h2>
+                </div>
+                <p class="card-description">
+                    Small pieces of data stored in the user's browser, sent with every HTTP request.
+                    Limited to about 4KB.
+                </p>
+                <div class="storage-form">
+                    <input type="text" id="cookieKey" placeholder="Key">
+                    <input type="text" id="cookieValue" placeholder="Value">
+                    <input type="number" id="cookieExpiry" placeholder="Expiry in days">
+                    <button onclick="setCookie()">Set Cookie</button>
+                    <button onclick="getCookie()">Get Cookie</button>
+                    <button class="clear-btn" onclick="clearCookie()">Clear Cookie</button>
+                </div>
+                <div id="cookieData" class="data-display"></div>
+            </div>
+
+            <!-- Local Storage Card -->
+            <div class="storage-card">
+                <div class="card-header">
+                    <div class="card-icon">💾</div>
+                    <h2 class="card-title">Local Storage</h2>
+                </div>
+                <p class="card-description">
+                    Persistent key-value storage that remains until explicitly cleared.
+                    Typically 5-10MB per domain.
+                </p>
+                <div class="storage-form">
+                    <input type="text" id="localKey" placeholder="Key">
+                    <input type="text" id="localValue" placeholder="Value">
+                    <button onclick="setLocalStorage()">Set Local Storage</button>
+                    <button onclick="getLocalStorage()">Get Local Storage</button>
+                    <button class="clear-btn" onclick="clearLocalStorage()">Clear All</button>
+                </div>
+                <div id="localData" class="data-display"></div>
+            </div>
+
+            <!-- Session Storage Card -->
+            <div class="storage-card">
+                <div class="card-header">
+                    <div class="card-icon">🔄</div>
+                    <h2 class="card-title">Session Storage</h2>
+                </div>
+                <p class="card-description">
+                    Temporary key-value storage that clears when the browser tab closes.
+                    Typically 5-10MB per domain.
+                </p>
+                <div class="storage-form">
+                    <input type="text" id="sessionKey" placeholder="Key">
+                    <input type="text" id="sessionValue" placeholder="Value">
+                    <button onclick="setSessionStorage()">Set Session Storage</button>
+                    <button onclick="getSessionStorage()">Get Session Storage</button>
+                    <button class="clear-btn" onclick="clearSessionStorage()">Clear All</button>
+                </div>
+                <div id="sessionData" class="data-display"></div>
+            </div>
+
+            <!-- IndexedDB Card -->
+            <div class="storage-card">
+                <div class="card-header">
+                    <div class="card-icon">🗄️</div>
+                    <h2 class="card-title">IndexedDB</h2>
+                </div>
+                <p class="card-description">
+                    A full-featured NoSQL database for storing large amounts of structured data.
+                    Can store hundreds of MBs.
+                </p>
+                <div class="storage-form">
+                    <input type="text" id="indexedKey" placeholder="Key">
+                    <input type="text" id="indexedValue" placeholder="Value">
+                    <button onclick="setIndexedDB()">Set IndexedDB</button>
+                    <button onclick="getIndexedDB()">Get IndexedDB</button>
+                    <button class="clear-btn" onclick="clearIndexedDB()">Clear All</button>
+                </div>
+                <div id="indexedData" class="data-display"></div>
+            </div>
+        </div>
+
+        <div class="comparison-table">
+            <h2>Storage Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Storage Type</th>
+                        <th>Capacity</th>
+                        <th>Persistence</th>
+                        <th>Accessible From</th>
+                        <th>Sent to Server</th>
+                        <th>Use Cases</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cookies</td>
+                        <td>~4KB</td>
+                        <td>Expires based on set expiry</td>
+                        <td>Any window</td>
+                        <td>Yes, with every request</td>
+                        <td>Session management, personalization</td>
+                    </tr>
+                    <tr>
+                        <td>Local Storage</td>
+                        <td>5-10MB</td>
+                        <td>Until explicitly cleared</td>
+                        <td>Same origin</td>
+                        <td>No</td>
+                        <td>Persistent app data, user preferences</td>
+                    </tr>
+                    <tr>
+                        <td>Session Storage</td>
+                        <td>5-10MB</td>
+                        <td>Tab/window session</td>
+                        <td>Same tab</td>
+                        <td>No</td>
+                        <td>Form data, temporary state</td>
+                    </tr>
+                    <tr>
+                        <td>IndexedDB</td>
+                        <td>Up to 50% of disk space</td>
+                        <td>Until explicitly cleared</td>
+                        <td>Same origin</td>
+                        <td>No</td>
+                        <td>Large datasets, offline apps</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>Refresh the page to see persistent data. Open a new tab to test session storage.</p>
+        </div>
+    </div>
+
+    <script>
+        // Cookie Functions
+        function setCookie() {
+            const key = document.getElementById('cookieKey').value;
+            const value = document.getElementById('cookieValue').value;
+            const expiryDays = document.getElementById('cookieExpiry').value || 7;
+            
+            if (!key || !value) {
+                alert('Please enter both key and value');
+                return;
+            }
+            
+            const date = new Date();
+            date.setTime(date.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + date.toUTCString();
+            
+            document.cookie = `${key}=${value};${expires};path=/`;
+            showMessage('cookieData', `Cookie "${key}" set successfully!`, 'success');
+            document.getElementById('cookieKey').value = '';
+            document.getElementById('cookieValue').value = '';
+            document.getElementById('cookieExpiry').value = '';
+        }
+
+        function getCookie() {
+            const key = document.getElementById('cookieKey').value;
+            if (!key) {
+                alert('Please enter a key');
+                return;
+            }
+            
+            const name = key + "=";
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) === 0) {
+                    showMessage('cookieData', `Value: ${c.substring(name.length, c.length)}`, 'success');
+                    return;
+                }
+            }
+            
+            showMessage('cookieData', `Cookie "${key}" not found`, 'error');
+        }
+
+        function clearCookie() {
+            const key = document.getElementById('cookieKey').value;
+            if (!key) {
+                alert('Please enter a key to clear');
+                return;
+            }
+            
+            document.cookie = `${key}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+            showMessage('cookieData', `Cookie "${key}" cleared`, 'success');
+        }
+
+        // Local Storage Functions
+        function setLocalStorage() {
+            const key = document.getElementById('localKey').value;
+            const value = document.getElementById('localValue').value;
+            
+            if (!key || !value) {
+                alert('Please enter both key and value');
+                return;
+            }
+            
+            localStorage.setItem(key, value);
+            showMessage('localData', `Local storage "${key}" set successfully!`, 'success');
+            document.getElementById('localKey').value = '';
+            document.getElementById('localValue').value = '';
+        }
+
+        function getLocalStorage() {
+            const key = document.getElementById('localKey').value;
+            if (!key) {
+                // Show all local storage items
+                let allItems = '';
+                for (let i = 0; i < localStorage.length; i++) {
+                    const storageKey = localStorage.key(i);
+                    allItems += `${storageKey}: ${localStorage.getItem(storageKey)}\n`;
+                }
+                showMessage('localData', allItems || 'No items in local storage');
+                return;
+            }
+            
+            const value = localStorage.getItem(key);
+            if (value) {
+                showMessage('localData', `Value: ${value}`, 'success');
+            } else {
+                showMessage('localData', `Key "${key}" not found in local storage`, 'error');
+            }
+        }
+
+        function clearLocalStorage() {
+            localStorage.clear();
+            showMessage('localData', 'Local storage cleared', 'success');
+        }
+
+        // Session Storage Functions
+        function setSessionStorage() {
+            const key = document.getElementById('sessionKey').value;
+            const value = document.getElementById('sessionValue').value;
+            
+            if (!key || !value) {
+                alert('Please enter both key and value');
+                return;
+            }
+            
+            sessionStorage.setItem(key, value);
+            showMessage('sessionData', `Session storage "${key}" set successfully!`, 'success');
+            document.getElementById('sessionKey').value = '';
+            document.getElementById('sessionValue').value = '';
+        }
+
+        function getSessionStorage() {
+            const key = document.getElementById('sessionKey').value;
+            if (!key) {
+                // Show all session storage items
+                let allItems = '';
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const storageKey = sessionStorage.key(i);
+                    allItems += `${storageKey}: ${sessionStorage.getItem(storageKey)}\n`;
+                }
+                showMessage('sessionData', allItems || 'No items in session storage');
+                return;
+            }
+            
+            const value = sessionStorage.getItem(key);
+            if (value) {
+                showMessage('sessionData', `Value: ${value}`, 'success');
+            } else {
+                showMessage('sessionData', `Key "${key}" not found in session storage`, 'error');
+            }
+        }
+
+        function clearSessionStorage() {
+            sessionStorage.clear();
+            showMessage('sessionData', 'Session storage cleared', 'success');
+        }
+
+        // IndexedDB Functions
+        let db;
+        const dbName = "StorageDemoDB";
+        const storeName = "keyValueStore";
+
+        // Initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, 1);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(storeName)) {
+                        const store = db.createObjectStore(storeName, { keyPath: "key" });
+                        store.createIndex("value", "value", { unique: false });
+                    }
+                };
+            });
+        }
+
+        async function setIndexedDB() {
+            const key = document.getElementById('indexedKey').value;
+            const value = document.getElementById('indexedValue').value;
+            
+            if (!key || !value) {
+                alert('Please enter both key and value');
+                return;
+            }
+            
+            try {
+                if (!db) await initDB();
+                
+                const transaction = db.transaction([storeName], "readwrite");
+                const store = transaction.objectStore(storeName);
+                const request = store.put({ key, value });
+                
+                request.onsuccess = () => {
+                    showMessage('indexedData', `IndexedDB "${key}" set successfully!`, 'success');
+                    document.getElementById('indexedKey').value = '';
+                    document.getElementById('indexedValue').value = '';
+                };
+                
+                request.onerror = () => {
+                    showMessage('indexedData', 'Error setting value in IndexedDB', 'error');
+                };
+            } catch (error) {
+                showMessage('indexedData', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getIndexedDB() {
+            const key = document.getElementById('indexedKey').value;
+            
+            try {
+                if (!db) await initDB();
+                
+                if (!key) {
+                    // Show all IndexedDB items
+                    const transaction = db.transaction([storeName], "readonly");
+                    const store = transaction.objectStore(storeName);
+                    const request = store.getAll();
+                    
+                    request.onsuccess = () => {
+                        const items = request.result;
+                        let allItems = '';
+                        items.forEach(item => {
+                            allItems += `${item.key}: ${item.value}\n`;
+                        });
+                        showMessage('indexedData', allItems || 'No items in IndexedDB');
+                    };
+                    
+                    request.onerror = () => {
+                        showMessage('indexedData', 'Error retrieving items from IndexedDB', 'error');
+                    };
+                    return;
+                }
+                
+                const transaction = db.transaction([storeName], "readonly");
+                const store = transaction.objectStore(storeName);
+                const request = store.get(key);
+                
+                request.onsuccess = () => {
+                    const result = request.result;
+                    if (result) {
+                        showMessage('indexedData', `Value: ${result.value}`, 'success');
+                    } else {
+                        showMessage('indexedData', `Key "${key}" not found in IndexedDB`, 'error');
+                    }
+                };
+                
+                request.onerror = () => {
+                    showMessage('indexedData', 'Error retrieving value from IndexedDB', 'error');
+                };
+            } catch (error) {
+                showMessage('indexedData', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function clearIndexedDB() {
+            try {
+                if (!db) await initDB();
+                
+                const transaction = db.transaction([storeName], "readwrite");
+                const store = transaction.objectStore(storeName);
+                const request = store.clear();
+                
+                request.onsuccess = () => {
+                    showMessage('indexedData', 'IndexedDB cleared', 'success');
+                };
+                
+                request.onerror = () => {
+                    showMessage('indexedData', 'Error clearing IndexedDB', 'error');
+                };
+            } catch (error) {
+                showMessage('indexedData', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Utility function to show messages
+        function showMessage(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = 'data-display';
+            
+            if (type === 'success') {
+                element.classList.add('success-message');
+            } else if (type === 'error') {
+                element.classList.add('error-message');
+            }
+        }
+
+        // Initialize IndexedDB on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initDB().catch(error => {
+                console.error('IndexedDB initialization failed:', error);
+            });
+        });
+    </script>
+</body>
+</html>
